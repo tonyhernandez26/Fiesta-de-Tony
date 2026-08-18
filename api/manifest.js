@@ -1,35 +1,52 @@
 // Función serverless de Vercel: guarda/lee la lista de reservas
 // compartida por todos los invitados y el anfitrión.
 //
-// Usa Upstash Redis (integración de "Storage" en el panel de Vercel).
-// Mientras no hayas conectado una base de datos, funciona en modo
-// "demo" con memoria temporal (se reinicia de vez en cuando) para que
-// la página nunca se rompa.
+// Usa Neon (PostgreSQL sin servidor, integración de "Storage" en el
+// panel de Vercel). Mientras no hayas conectado una base de datos,
+// funciona en modo "demo" con memoria temporal (se reinicia de vez en
+// cuando) para que la página nunca se rompa.
 
-import { Redis } from "@upstash/redis";
+import { neon } from "@neondatabase/serverless";
 
-const KEY = "boletos_fiesta_manifest";
 const MAX_BYTES = 500_000; // límite razonable para evitar abuso
+const ROW_ID = "boletos_fiesta_manifest";
 
-let redis = null;
-if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
-  redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-  });
-}
+const connectionString =
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL ||
+  process.env.DATABASE_URL_UNPOOLED ||
+  process.env.POSTGRES_URL_NON_POOLING;
+
+const sql = connectionString ? neon(connectionString) : null;
 
 // Respaldo en memoria solo para cuando todavía no hay base de datos
 // conectada (no persiste entre reinicios de la función).
 globalThis.__memManifest = globalThis.__memManifest || [];
+
+let tableReady = false;
+async function ensureTable() {
+  if (tableReady || !sql) return;
+  await sql`
+    CREATE TABLE IF NOT EXISTS manifest_kv (
+      id TEXT PRIMARY KEY,
+      data JSONB NOT NULL
+    )
+  `;
+  tableReady = true;
+}
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   try {
     if (req.method === "GET") {
-      const data = redis ? await redis.get(KEY) : globalThis.__memManifest;
-      return res.status(200).json(Array.isArray(data) ? data : []);
+      if (sql) {
+        await ensureTable();
+        const rows = await sql`SELECT data FROM manifest_kv WHERE id = ${ROW_ID}`;
+        const data = rows[0]?.data;
+        return res.status(200).json(Array.isArray(data) ? data : []);
+      }
+      return res.status(200).json(globalThis.__memManifest);
     }
 
     if (req.method === "POST") {
@@ -42,8 +59,13 @@ export default async function handler(req, res) {
       if (size > MAX_BYTES) {
         return res.status(413).json({ error: "Datos demasiado grandes." });
       }
-      if (redis) {
-        await redis.set(KEY, list);
+      if (sql) {
+        await ensureTable();
+        await sql`
+          INSERT INTO manifest_kv (id, data)
+          VALUES (${ROW_ID}, ${JSON.stringify(list)}::jsonb)
+          ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data
+        `;
       } else {
         globalThis.__memManifest = list;
       }
