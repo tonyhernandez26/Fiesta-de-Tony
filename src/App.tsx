@@ -11,8 +11,8 @@ const EVENT = {
   name: "Cumple + Despedida de Tony",
   date: "Sábado 22 de agosto, 2026",
   time: "Desde las 8:00 PM",
-     location: "Villa Kennedy — Cdla. Kennedy Norte, Mz 902, Villa 22",
-   mapsLink: "https://maps.google.com/?q=Cdla+Kennedy+Norte+Mz+902+Villa+22+Guayaquil",
+     location: "Kennedy Norte",
+mapsLink: "https://www.google.com/maps?q=-2.156528,-79.902222",
   amenities: ["DJ en vivo", "Piscina", "Barra libre hasta las 00h00", "Seguridad privada", "Hamburguesas, hot dogs y cervezas a la venta", "Sorpresa especial durante la noche"],
   tickets: [
     { id: "general", name: "Boleto General", price: 15, desc: "Incluye cóctel de bienvenida" },
@@ -232,7 +232,7 @@ export default function App() {
         </div>
 
         <p className="mono" style={{ fontSize: 13, letterSpacing: 3, opacity: 0.85, marginBottom: 6 }}>
-          DESTINO: CANCÚN — SOLO POR UNA NOCHE
+          DESTINO: UNA BUENA NOCHE — DRESS CODE: BLANCO
         </p>
         <h1 className="display" style={{ fontSize: "clamp(40px, 11vw, 80px)", lineHeight: 0.95, margin: "0 0 18px" }}>
           {EVENT.name}
