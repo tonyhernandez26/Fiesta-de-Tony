@@ -11,8 +11,8 @@ const EVENT = {
   name: "Cumple + Despedida de Tony",
   date: "Sábado 22 de agosto, 2026",
   time: "Desde las 8:00 PM",
-  location: "Villa Kennedy — Cdla. Kennedy Norte, Mz 902, Villa 22",
-  mapsLink: "https://maps.google.com/?q=Cdla+Kennedy+Norte+Mz+902+Villa+22+Guayaquil",
+     location: "Villa Kennedy — Cdla. Kennedy Norte, Mz 902, Villa 22",
+   mapsLink: "https://maps.google.com/?q=Cdla+Kennedy+Norte+Mz+902+Villa+22+Guayaquil",
   amenities: ["DJ en vivo", "Piscina", "Barra libre hasta las 00h00", "Seguridad privada", "Hamburguesas, hot dogs y cervezas a la venta", "Sorpresa especial durante la noche"],
   tickets: [
     { id: "general", name: "Boleto General", price: 15, desc: "Incluye cóctel de bienvenida" },
