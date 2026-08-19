@@ -274,10 +274,11 @@ export default function App() {
             <h2 className="display" style={{ fontSize: 22, margin: 0 }}>ELIGE TUS BOLETOS</h2>
           </div>
           {soldOut && (
-            <p className="mono" style={{ fontSize: 12, color: C.hibiscus, marginBottom: 14 }}>
-              ¡CUPO AGOTADO!
-            </p>
-          {EVENT.tickets.map(t => (
+  <p className="mono" style={{ fontSize: 12, color: C.hibiscus, marginBottom: 14 }}>
+    ¡CUPO AGOTADO!
+  </p>
+)}
+{EVENT.tickets.map(t => (
             <div key={t.id} style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
               background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "14px 16px", marginBottom: 10,
