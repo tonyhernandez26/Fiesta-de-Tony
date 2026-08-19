@@ -273,9 +273,10 @@ export default function App() {
             <Ticket size={20} color={C.papaya} />
             <h2 className="display" style={{ fontSize: 22, margin: 0 }}>ELIGE TUS BOLETOS</h2>
           </div>
-          <p className="mono" style={{ fontSize: 12, color: soldOut ? C.hibiscus : C.coral, marginBottom: 14 }}>
-            {soldOut ? "¡CUPO AGOTADO!" : `${spotsLeft} de ${EVENT.capacity} cupos disponibles`}
-          </p>
+          {soldOut && (
+            <p className="mono" style={{ fontSize: 12, color: C.hibiscus, marginBottom: 14 }}>
+              ¡CUPO AGOTADO!
+            </p>
           {EVENT.tickets.map(t => (
             <div key={t.id} style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
