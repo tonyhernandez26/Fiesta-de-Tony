@@ -389,26 +389,7 @@ export default function App() {
           )}
         </section>
 
-        {/* MANIFEST PÚBLICO */}
-        <section style={{ background: "#fff", borderRadius: 22, padding: 22, boxShadow: "0 10px 24px rgba(11,46,44,0.08)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-            <Users size={20} color={C.hibiscus} />
-            <h2 className="display" style={{ fontSize: 20, margin: 0, color: C.night }}>QUIÉN YA VA</h2>
-          </div>
-          {loading ? (
-            <p style={{ fontSize: 13, opacity: 0.6 }}>Cargando lista...</p>
-          ) : manifest.length === 0 ? (
-            <p style={{ fontSize: 13, opacity: 0.6 }}>Sé el primero en confirmar tu lugar 🌊</p>
-          ) : (
-            <p style={{ fontSize: 14, color: C.night }}>
-              <strong>{confirmedCount}</strong> boletos confirmados hasta ahora — entre ellos {firstNames.join(", ")}{manifest.length > 8 ? " y más" : ""}.
-            </p>
-          )}
-        </section>
-
-        <p style={{ textAlign: "center", fontSize: 11, opacity: 0.5, marginTop: 18 }}>
-          Esta lista de invitados es visible para cualquier persona que abra esta página.
-        </p>
+       
       </div>
 
       {/* PIN MODAL */}
