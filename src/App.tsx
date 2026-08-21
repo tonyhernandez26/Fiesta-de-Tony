@@ -13,10 +13,9 @@ const EVENT = {
   time: "Desde las 8:00 PM",
      location: "Kennedy Norte",
 mapsLink: "https://www.google.com/maps?q=-2.156528,-79.902222",
-  amenities: ["DJ en vivo", "Piscina", "Barra libre hasta la 01h00", "Seguridad privada", "Hamburguesas, hot dogs y cervezas a la venta", "Sorpresa especial durante la noche"],
-  tickets: [
-    { id: "general", name: "Boleto General", price: 15, desc: "Consumibles" },
-    { id: "barralibre", name: "Barra Libre", price: 20, desc: "Barra libre hasta las 1:00 AM" },
+    amenities: ["DJ en vivo", "Piscina", "Cóctel de bienvenida", "Seguridad privada", "Hamburguesas, hot dogs y cervezas a la venta", "Sorpresa especial durante la noche"],
+    tickets: [
+    { id: "dopamina", name: "Dopamina Pass", price: 10, desc: "1 cóctel de cortesía" },
   ],
   paypalLink: "https://www.paypal.me/tonyhernandez6",
   bank: {
