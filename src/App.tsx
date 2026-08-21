@@ -3,7 +3,6 @@ import {
   MapPin, Calendar, Clock, Users, CreditCard, Send, Check,
   X, Lock, Palmtree, Ticket, Copy, Plus, Minus, Sparkles
 } from "lucide-react";
-
 /* ======================================================
    EDITA AQUÍ los datos de tu fiesta, cuentas y precios
    ====================================================== */
@@ -11,10 +10,10 @@ const EVENT = {
   name: "Cumple + Despedida de Tony",
   date: "Sábado 22 de agosto, 2026",
   time: "Desde las 8:00 PM",
-     location: "Kennedy Norte",
-mapsLink: "https://www.google.com/maps?q=-2.156528,-79.902222",
-    amenities: ["DJ en vivo", "Piscina", "Cóctel de bienvenida", "Seguridad privada", "Hamburguesas, hot dogs y cervezas a la venta", "Sorpresa especial durante la noche"],
-    tickets: [
+  location: "Kennedy Norte",
+  mapsLink: "https://www.google.com/maps?q=-2.156528,-79.902222",
+  amenities: ["DJ en vivo", "Piscina", "Cóctel de bienvenida", "Seguridad privada", "Hamburguesas, hot dogs y cervezas a la venta", "Sorpresa especial durante la noche"],
+  tickets: [
     { id: "dopamina", name: "Dopamina Pass", price: 10, desc: "1 cóctel de cortesía" },
   ],
   paypalLink: "https://www.paypal.me/tonyhernandez6",
@@ -29,7 +28,6 @@ mapsLink: "https://www.google.com/maps?q=-2.156528,-79.902222",
   hostPin: "2121731",
   capacity: 150,
 };
-
 const C = {
   night: "#0B2E2C",
   nightDeep: "#062120",
@@ -41,7 +39,6 @@ const C = {
   palm: "#12463A",
   cream: "#FFF8ED",
 };
-
 const FONTS = (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap');
@@ -61,14 +58,12 @@ const FONTS = (
     @media (prefers-reduced-motion: reduce) { .btn, .anim { transition: none !important; animation: none !important; } }
   `}</style>
 );
-
 function genCode() {
   const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   let s = "";
   for (let i = 0; i < 5; i++) s += chars[Math.floor(Math.random() * chars.length)];
   return `TH-${s}`;
 }
-
 /* ======================================================
    Almacenamiento compartido: usa /api/manifest (Vercel
    Function + base de datos) para que todos los invitados
@@ -106,7 +101,6 @@ async function saveManifest(list) {
     } catch {}
   }
 }
-
 export default function App() {
   const [manifest, setManifest] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -117,7 +111,6 @@ export default function App() {
   const [confirmation, setConfirmation] = useState(null);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
   const [hostMode, setHostMode] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
@@ -125,14 +118,11 @@ export default function App() {
   const [doorSearch, setDoorSearch] = useState("");
   const [trackCode, setTrackCode] = useState("");
   const [trackResult, setTrackResult] = useState(undefined); // undefined = sin buscar, null = no encontrado, obj = encontrado
-
   useEffect(() => {
     loadManifest().then(m => { setManifest(m); setLoading(false); });
   }, []);
-
   const total = EVENT.tickets.reduce((sum, t) => sum + t.price * (qty[t.id] || 0), 0);
   const totalTickets = Object.values(qty).reduce((a, b) => a + b, 0);
-
   const changeQty = (id, delta) => {
     setQty(q => {
       const currentTotal = Object.values(q).reduce((a, b) => a + b, 0);
@@ -142,7 +132,6 @@ export default function App() {
       return { ...q, [id]: Math.min(next, 20) };
     });
   };
-
   async function submitReservation(paidMethod, status) {
     if (totalTickets === 0) { setError("Elige al menos un boleto."); return; }
     if (totalTickets > spotsLeft) { setError(`Solo quedan ${spotsLeft} cupos disponibles.`); return; }
@@ -164,28 +153,26 @@ export default function App() {
     const current = await loadManifest();
     const updated = [...current, entry];
     await saveManifest(updated);
-        setManifest(updated);
+    setManifest(updated);
     setConfirmation(entry);
     setSubmitting(false);
     return entry;
   }
-  
-  function waLink(entry) {
-    const msg = `Hola! Soy ${entry?.name || buyer.name}, confirmo mi comprobante de pago para el ${EVENT.name}. Código de reserva: ${entry?.code || ""}. Referencia: ${entry?.reference || reference}`;
+
+  function waLink() {
+    const ticketsSummary = EVENT.tickets.filter(t => qty[t.id] > 0).map(t => `${qty[t.id]}x ${t.name}`).join(", ") || "boleto";
+    const msg = `Hola! Soy ${buyer.name || "(sin nombre)"}, cédula ${reference || "(sin cédula)"}. Quiero confirmar mi compra para ${EVENT.name}: ${ticketsSummary} — Total $${total.toFixed(2)}. Método de pago: ${method === "paypal" ? "PayPal" : "Transferencia"}. Adjunto mi comprobante de pago.`;
     return `https://wa.me/${EVENT.whatsapp}?text=${encodeURIComponent(msg)}`;
   }
-
   function checkPin() {
     if (pinInput === EVENT.hostPin) { setHostMode(true); setShowPinBox(false); setPinError(false); }
     else setPinError(true);
   }
-
   function trackMyReservation() {
     const code = trackCode.trim().toUpperCase();
     const found = manifest.find(m => m.code.toUpperCase() === code);
     setTrackResult(found || null);
   }
-
   async function updateStatus(code, newStatus) {
     const updated = manifest.map(m => m.code === code ? { ...m, status: newStatus } : m);
     setManifest(updated);
@@ -196,24 +183,20 @@ export default function App() {
     setManifest(updated);
     await saveManifest(updated);
   }
-    
+
   async function removeEntry(code) {
     const updated = manifest.filter(m => m.code !== code);
     setManifest(updated);
     await saveManifest(updated);
   }
-
   const soldTickets = manifest.reduce((sum, m) => sum + m.tickets.reduce((a, t) => a + t.qty, 0), 0);
   const spotsLeft = Math.max(0, EVENT.capacity - soldTickets);
   const soldOut = spotsLeft === 0;
-
   const confirmedCount = manifest.filter(m => m.status === "Confirmado").reduce((s, m) => s + m.tickets.reduce((a, t) => a + t.qty, 0), 0);
   const firstNames = manifest.slice(-8).map(m => m.name.split(" ")[0]);
-
   return (
     <div style={{ background: C.cream, minHeight: "100vh" }}>
       {FONTS}
-
       {/* HERO */}
       <div style={{
         position: "relative", overflow: "hidden",
@@ -231,14 +214,12 @@ export default function App() {
             <Lock size={13} /> Modo anfitrión
           </button>
         </div>
-
         <p className="mono" style={{ fontSize: 13, letterSpacing: 3, opacity: 0.85, marginBottom: 6 }}>
           DESTINO: UNA BUENA NOCHE — DRESS CODE: BLANCO
         </p>
         <h1 className="display" style={{ fontSize: "clamp(40px, 11vw, 80px)", lineHeight: 0.95, margin: "0 0 18px" }}>
           {EVENT.name}
         </h1>
-
         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 22px", fontSize: 14, fontWeight: 500 }}>
           <span style={{ display: "flex", alignItems: "center", gap: 6 }}><Calendar size={16} /> {EVENT.date}</span>
           <span style={{ display: "flex", alignItems: "center", gap: 6 }}><Clock size={16} /> {EVENT.time}</span>
@@ -246,16 +227,13 @@ export default function App() {
             <MapPin size={16} /> {EVENT.location}
           </a>
         </div>
-
         {/* palm silhouette divider */}
         <svg viewBox="0 0 1440 120" style={{ position: "absolute", left: 0, right: 0, bottom: -2, width: "100%", height: 90 }} preserveAspectRatio="none">
           <path d="M0,60 C240,110 480,10 720,55 C960,100 1200,20 1440,60 L1440,120 L0,120 Z" fill={C.sand} />
         </svg>
       </div>
-
       {/* CONTENIDO */}
       <div style={{ maxWidth: 720, margin: "-40px auto 0", padding: "0 16px 60px", position: "relative" }}>
-
         {/* AMENIDADES */}
         <section style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", margin: "0 0 22px" }}>
           {EVENT.amenities.map((a, i) => (
@@ -267,7 +245,6 @@ export default function App() {
             </span>
           ))}
         </section>
-
         {/* SELECCIÓN DE BOLETOS */}
         <section style={{ background: C.night, borderRadius: 22, padding: 22, color: C.cream, boxShadow: "0 20px 40px rgba(11,46,44,0.25)", marginBottom: 22 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
@@ -275,11 +252,11 @@ export default function App() {
             <h2 className="display" style={{ fontSize: 22, margin: 0 }}>ELIGE TUS BOLETOS</h2>
           </div>
           {soldOut && (
-  <p className="mono" style={{ fontSize: 12, color: C.hibiscus, marginBottom: 14 }}>
-    ¡CUPO AGOTADO!
-  </p>
-)}
-{EVENT.tickets.map(t => (
+            <p className="mono" style={{ fontSize: 12, color: C.hibiscus, marginBottom: 14 }}>
+              ¡CUPO AGOTADO!
+            </p>
+          )}
+          {EVENT.tickets.map(t => (
             <div key={t.id} style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
               background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "14px 16px", marginBottom: 10,
@@ -301,7 +278,6 @@ export default function App() {
             <span className="display" style={{ fontSize: 24, color: C.papaya }}>${total.toFixed(2)}</span>
           </div>
         </section>
-
         {/* DATOS + PAGO */}
         {soldOut && !confirmation ? (
           <section style={{ background: C.night, color: C.cream, borderRadius: 22, padding: 26, marginBottom: 22, textAlign: "center" }}>
@@ -314,13 +290,12 @@ export default function App() {
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
               <input placeholder="Nombre completo" value={buyer.name} onChange={e => setBuyer(b => ({ ...b, name: e.target.value }))} style={inputStyle} />
               <input placeholder="WhatsApp o correo" value={buyer.contact} onChange={e => setBuyer(b => ({ ...b, contact: e.target.value }))} style={inputStyle} />
+              <input placeholder="Número de cédula" value={reference} onChange={e => setReference(e.target.value)} style={inputStyle} />
             </div>
-
             <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
               <button onClick={() => setMethod("paypal")} className="btn" style={tabStyle(method === "paypal")}>PayPal / Tarjeta</button>
               <button onClick={() => setMethod("transfer")} className="btn" style={tabStyle(method === "transfer")}>Transferencia</button>
             </div>
-
             {method === "paypal" ? (
               <div>
                 <p style={{ fontSize: 13, color: C.palm, marginBottom: 12 }}>
@@ -330,27 +305,32 @@ export default function App() {
                   style={{ ...primaryBtnStyle, textDecoration: "none", display: "flex", justifyContent: "center", gap: 8 }}>
                   <CreditCard size={18} /> Pagar ${total.toFixed(2)} con PayPal
                 </a>
-                <button disabled={submitting} onClick={() => submitReservation("PayPal", "Pendiente de verificación")} className="btn"
-                  style={{ ...secondaryBtnStyle, marginTop: 10 }}>
-                  {submitting ? "Guardando..." : "Ya pagué, confirmar mi lugar"}
-                </button>
-                <p style={{ fontSize: 11, opacity: 0.6, marginTop: 6 }}>El anfitrión revisará el pago en PayPal antes de confirmar tu cupo.</p>
               </div>
             ) : (
-              <div>
-                <div style={{ background: "#fff", borderRadius: 14, padding: 14, marginBottom: 12, fontSize: 13, lineHeight: 1.7 }}>
-                  <strong>Banco:</strong> {EVENT.bank.banco}<br />
-                  <strong>Tipo:</strong> {EVENT.bank.tipo}<br />
-                  <strong>N° cuenta:</strong> <span className="mono">{EVENT.bank.numero}</span><br />
-                  <strong>Nombre:</strong> {EVENT.bank.nombre}<br />
-                  <strong>Cédula/RUC:</strong> {EVENT.bank.cedula}
-                </div>
-                                              <input placeholder="Número de cédula" value={reference} onChange={e => setReference(e.target.value)} style={inputStyle} />
-                <button disabled={submitting} onClick={() => submitReservation("Transferencia", "Pendiente de verificación")} className="btn" style={{ ...primaryBtnStyle, marginTop: 10 }}>
-                  {submitting ? "Guardando..." : "Guardar mi reserva"}
-                </button>
+              <div style={{ background: "#fff", borderRadius: 14, padding: 14, marginBottom: 4, fontSize: 13, lineHeight: 1.7 }}>
+                <strong>Banco:</strong> {EVENT.bank.banco}<br />
+                <strong>Tipo:</strong> {EVENT.bank.tipo}<br />
+                <strong>N° cuenta:</strong> <span className="mono">{EVENT.bank.numero}</span><br />
+                <strong>Nombre:</strong> {EVENT.bank.nombre}<br />
+                <strong>Cédula/RUC:</strong> {EVENT.bank.cedula}
               </div>
             )}
+            <a
+              href={waLink()}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => {
+                if (totalTickets === 0) { e.preventDefault(); setError("Elige al menos un boleto."); return; }
+                if (!buyer.name.trim() || !buyer.contact.trim()) { e.preventDefault(); setError("Escribe tu nombre y un contacto (WhatsApp o correo)."); return; }
+                if (!reference.trim()) { e.preventDefault(); setError("Escribe tu número de cédula."); return; }
+                setError("");
+                submitReservation(method === "paypal" ? "PayPal" : "Transferencia", "Pendiente de verificación").catch(() => {});
+              }}
+              className="btn"
+              style={{ ...primaryBtnStyle, marginTop: 14, textDecoration: "none", display: "flex", justifyContent: "center", gap: 8 }}
+            >
+              <Send size={18} /> Ya pagué, enviar comprobante por WhatsApp
+            </a>
             {error && <p style={{ color: C.hibiscus, fontSize: 13, marginTop: 10, fontWeight: 700 }}>{error}</p>}
           </section>
         ) : (
@@ -359,7 +339,6 @@ export default function App() {
             setQty(Object.fromEntries(EVENT.tickets.map(t => [t.id, 0])));
           }} />
         )}
-
         {/* CONSULTAR MI RESERVA */}
         <section style={{ background: "#fff", borderRadius: 22, padding: 22, boxShadow: "0 10px 24px rgba(11,46,44,0.08)", marginBottom: 22 }}>
           <h2 className="display" style={{ fontSize: 20, margin: "0 0 10px", color: C.night }}>¿YA RESERVASTE? CONSULTA TU ESTADO</h2>
@@ -385,9 +364,7 @@ export default function App() {
           )}
         </section>
 
-       
       </div>
-
       {/* PIN MODAL */}
       {showPinBox && !hostMode && (
         <Modal onClose={() => setShowPinBox(false)}>
@@ -398,7 +375,6 @@ export default function App() {
           <button onClick={checkPin} className="btn" style={{ ...primaryBtnStyle, marginTop: 12 }}>Entrar</button>
         </Modal>
       )}
-
       {/* HOST PANEL */}
       {hostMode && (
         <Modal onClose={() => setHostMode(false)} wide>
@@ -431,7 +407,7 @@ export default function App() {
                   </div>
                   <p style={{ margin: "4px 0", opacity: 0.7 }}>{m.contact} · {m.method} · ${m.total.toFixed(2)}</p>
                   <p style={{ margin: "4px 0" }}>{m.tickets.map(t => `${t.qty}x ${t.name}`).join(", ")}</p>
-                  {m.reference && <p style={{ margin: "4px 0", opacity: 0.7 }}>Ref: {m.reference}</p>}
+                  {m.reference && <p style={{ margin: "4px 0", opacity: 0.7 }}>Cédula: {m.reference}</p>}
                   <div style={{ display: "flex", gap: 8, marginTop: 8, alignItems: "center", flexWrap: "wrap" }}>
                     <span style={{
                       fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 999,
@@ -451,12 +427,8 @@ export default function App() {
                     }}>
                       {m.checkedIn ? "✓ Ya ingresó" : "Marcar entrada"}
                     </button>
-                                        {hostWaLink(m) && (
-                      <a href={hostWaLink(m)} target="_blank" rel="noreferrer" className="btn" style={{ ...miniBtnStyle, textDecoration: "none" }}>
-                        <Send size={13} /> Enviar QR
-                      </a>
-                    )}
-                   
+                    <button onClick={() => removeEntry(m.code)} className="btn" style={{ ...miniBtnStyle, color: C.hibiscus, borderColor: C.hibiscus }}>Eliminar</button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -466,7 +438,6 @@ export default function App() {
     </div>
   );
 }
-
 function BoardingPass({ entry, event, onReset }) {
   return (
     <section className="stub" style={{
@@ -501,15 +472,14 @@ function BoardingPass({ entry, event, onReset }) {
         />
       </div>
       <p style={{ fontSize: 11, opacity: 0.7, marginBottom: 16 }}>Muestra este código QR en la entrada.</p>
-                  <p style={{ fontSize: 12, color: C.papaya, fontWeight: 700, marginBottom: 16 }}>📌 Guarda este código. Te confirmaremos tu compra por WhatsApp apenas verifiquemos tu pago.</p>
-      
+      <p style={{ fontSize: 12, color: C.papaya, fontWeight: 700, marginBottom: 16 }}>📌 Guarda este código. Te confirmaremos tu compra por WhatsApp apenas verifiquemos tu pago.</p>
+
       <button onClick={onReset} className="btn" style={{ ...secondaryBtnStyle, borderColor: C.papaya, color: C.papaya }}>
         Hacer otra reserva
       </button>
     </section>
   );
 }
-
 function Modal({ children, onClose, wide }) {
   return (
     <div onClick={onClose} style={{
@@ -524,7 +494,6 @@ function Modal({ children, onClose, wide }) {
     </div>
   );
 }
-
 const inputStyle = {
   width: "100%", padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${C.sandDark}`,
   fontSize: 14, background: "#fff", color: C.night,
