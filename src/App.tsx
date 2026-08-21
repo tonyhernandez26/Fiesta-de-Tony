@@ -169,15 +169,7 @@ export default function App() {
     setSubmitting(false);
     return entry;
   }
-  async function sendComprobanteYGuardar() {
-    const win = window.open("", "_blank");
-    const entry = await submitReservation("Transferencia", "Pendiente de verificación");
-    if (entry && win) {
-      win.location.href = waLink(entry);
-    } else if (win) {
-      win.close();
-    }
-  }
+  
   function waLink(entry) {
     const msg = `Hola! Soy ${entry?.name || buyer.name}, confirmo mi comprobante de pago para el ${EVENT.name}. Código de reserva: ${entry?.code || ""}. Referencia: ${entry?.reference || reference}`;
     return `https://wa.me/${EVENT.whatsapp}?text=${encodeURIComponent(msg)}`;
@@ -203,6 +195,13 @@ export default function App() {
     const updated = manifest.map(m => m.code === code ? { ...m, checkedIn: !m.checkedIn } : m);
     setManifest(updated);
     await saveManifest(updated);
+  }
+    function hostWaLink(m) {
+    const digits = m.contact.replace(/\D/g, "");
+    if (digits.length < 8) return null;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(m.code)}`;
+    const msg = `Hola ${m.name}! Aquí tienes tu código QR para el ${EVENT.name}: ${m.code}\n\nMuéstralo en la entrada o descárgalo aquí: ${qrUrl}`;
+    return `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
   }
   async function removeEntry(code) {
     const updated = manifest.filter(m => m.code !== code);
@@ -352,9 +351,9 @@ export default function App() {
                   <strong>Nombre:</strong> {EVENT.bank.nombre}<br />
                   <strong>Cédula/RUC:</strong> {EVENT.bank.cedula}
                 </div>
-                                <input placeholder="N° de referencia o últimos dígitos del comprobante" value={reference} onChange={e => setReference(e.target.value)} style={inputStyle} />
-                <button disabled={submitting} onClick={sendComprobanteYGuardar} className="btn" style={{ ...primaryBtnStyle, marginTop: 10, display: "flex", justifyContent: "center", gap: 6 }}>
-                  <Send size={16} /> {submitting ? "Guardando..." : "Enviar comprobante y guardar mi reserva"}
+                                                <input placeholder="N° de referencia o últimos dígitos del comprobante" value={reference} onChange={e => setReference(e.target.value)} style={inputStyle} />
+                <button disabled={submitting} onClick={() => submitReservation("Transferencia", "Pendiente de verificación")} className="btn" style={{ ...primaryBtnStyle, marginTop: 10 }}>
+                  {submitting ? "Guardando..." : "Guardar mi reserva"}
                 </button>
               </div>
             )}
@@ -458,6 +457,11 @@ export default function App() {
                     }}>
                       {m.checkedIn ? "✓ Ya ingresó" : "Marcar entrada"}
                     </button>
+                                        {hostWaLink(m) && (
+                      <a href={hostWaLink(m)} target="_blank" rel="noreferrer" className="btn" style={{ ...miniBtnStyle, textDecoration: "none" }}>
+                        <Send size={13} /> Enviar QR
+                      </a>
+                    )}
                     <button onClick={() => removeEntry(m.code)} className="btn" style={{ ...miniBtnStyle, color: C.hibiscus, borderColor: C.hibiscus }}>Eliminar</button>
                   </div>
                 </div>
@@ -504,7 +508,16 @@ function BoardingPass({ entry, event, onReset }) {
         />
       </div>
       <p style={{ fontSize: 11, opacity: 0.7, marginBottom: 16 }}>Muestra este código QR en la entrada.</p>
-            <p style={{ fontSize: 12, color: C.papaya, fontWeight: 700, marginBottom: 16 }}>📌 Guarda este código: <span className="mono">{entry.code}</span> — más abajo en esta misma página puedes consultar si ya se confirmó tu pago.</p>
+                  <p style={{ fontSize: 12, color: C.papaya, fontWeight: 700, marginBottom: 16 }}>📌 Guarda este código: <span className="mono">{entry.code}</span> — más abajo en esta misma página puedes consultar si ya se confirmó tu pago.</p>
+      {entry.method === "Transferencia" && (
+        
+          href={`https://wa.me/${event.whatsapp}?text=${encodeURIComponent(`Hola! Soy ${entry.name}, confirmo mi comprobante de pago para el ${event.name}. Código de reserva: ${entry.code}. Referencia: ${entry.reference}`)}`}
+          target="_blank" rel="noreferrer" className="btn"
+          style={{ ...primaryBtnStyle, textDecoration: "none", display: "flex", justifyContent: "center", gap: 8, marginBottom: 12 }}
+        >
+          <Send size={16} /> Enviar comprobante por WhatsApp
+        </a>
+      )}
       <button onClick={onReset} className="btn" style={{ ...secondaryBtnStyle, borderColor: C.papaya, color: C.papaya }}>
         Hacer otra reserva
       </button>
