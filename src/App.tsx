@@ -164,11 +164,17 @@ export default function App() {
     const current = await loadManifest();
     const updated = [...current, entry];
     await saveManifest(updated);
-    setManifest(updated);
+        setManifest(updated);
     setConfirmation(entry);
     setSubmitting(false);
+    return entry;
   }
-
+async function sendComprobanteYGuardar() {
+    const entry = await submitReservation("Transferencia", "Pendiente de verificación");
+    if (entry) {
+      window.open(waLink(entry), "_blank");
+    }
+  }
   function waLink(entry) {
     const msg = `Hola! Soy ${entry?.name || buyer.name}, confirmo mi comprobante de pago para el ${EVENT.name}. Código de reserva: ${entry?.code || ""}. Referencia: ${entry?.reference || reference}`;
     return `https://wa.me/${EVENT.whatsapp}?text=${encodeURIComponent(msg)}`;
@@ -343,14 +349,9 @@ export default function App() {
                   <strong>Nombre:</strong> {EVENT.bank.nombre}<br />
                   <strong>Cédula/RUC:</strong> {EVENT.bank.cedula}
                 </div>
-                <input placeholder="N° de referencia o últimos dígitos del comprobante" value={reference} onChange={e => setReference(e.target.value)} style={inputStyle} />
-                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                  <a href={waLink()} target="_blank" rel="noreferrer" className="btn" style={{ ...secondaryBtnStyle, textDecoration: "none", flex: 1, textAlign: "center", display: "flex", justifyContent: "center", gap: 6 }}>
-                    <Send size={16} /> Enviar comprobante por WhatsApp
-                  </a>
-                </div>
-                <button disabled={submitting} onClick={() => submitReservation("Transferencia", "Pendiente de verificación")} className="btn" style={{ ...primaryBtnStyle, marginTop: 10 }}>
-                  {submitting ? "Guardando..." : "Guardar mi reserva"}
+                                <input placeholder="N° de referencia o últimos dígitos del comprobante" value={reference} onChange={e => setReference(e.target.value)} style={inputStyle} />
+                <button disabled={submitting} onClick={sendComprobanteYGuardar} className="btn" style={{ ...primaryBtnStyle, marginTop: 10, display: "flex", justifyContent: "center", gap: 6 }}>
+                  <Send size={16} /> {submitting ? "Guardando..." : "Enviar comprobante y guardar mi reserva"}
                 </button>
               </div>
             )}
@@ -500,7 +501,7 @@ function BoardingPass({ entry, event, onReset }) {
         />
       </div>
       <p style={{ fontSize: 11, opacity: 0.7, marginBottom: 16 }}>Muestra este código QR en la entrada.</p>
-      <p style={{ fontSize: 12, color: C.papaya, fontWeight: 700, marginBottom: 16 }}>📌 Guarda este código: <span className="mono">{entry.code}</span> — lo necesitas para consultar tu estado más adelante.</p>
+            <p style={{ fontSize: 12, color: C.papaya, fontWeight: 700, marginBottom: 16 }}>📌 Guarda este código: <span className="mono">{entry.code}</span> — más abajo en esta misma página puedes consultar si ya se confirmó tu pago.</p>
       <button onClick={onReset} className="btn" style={{ ...secondaryBtnStyle, borderColor: C.papaya, color: C.papaya }}>
         Hacer otra reserva
       </button>
