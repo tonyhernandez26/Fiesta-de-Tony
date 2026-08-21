@@ -169,10 +169,13 @@ export default function App() {
     setSubmitting(false);
     return entry;
   }
-async function sendComprobanteYGuardar() {
+  async function sendComprobanteYGuardar() {
+    const win = window.open("", "_blank");
     const entry = await submitReservation("Transferencia", "Pendiente de verificación");
-    if (entry) {
-      window.open(waLink(entry), "_blank");
+    if (entry && win) {
+      win.location.href = waLink(entry);
+    } else if (win) {
+      win.close();
     }
   }
   function waLink(entry) {
