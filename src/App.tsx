@@ -462,8 +462,12 @@ export default function App() {
                         <Send size={13} /> Enviar QR
                       </a>
                     )}
+                   {hostWaLink(m) && (
+                      <a href={hostWaLink(m)} target="_blank" rel="noreferrer" className="btn" style={{ ...miniBtnStyle, textDecoration: "none" }}>
+                        <Send size={13} /> Enviar QR
+                      </a>
+                    )}
                     <button onClick={() => removeEntry(m.code)} className="btn" style={{ ...miniBtnStyle, color: C.hibiscus, borderColor: C.hibiscus }}>Eliminar</button>
-                  </div>
                 </div>
               ))}
             </div>
