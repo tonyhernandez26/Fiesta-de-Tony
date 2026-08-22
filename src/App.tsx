@@ -10,8 +10,7 @@ const EVENT = {
   name: "Cumple + Despedida de Tony",
   date: "Sábado 22 de agosto, 2026",
   time: "Desde las 8:00 PM",
-  location: "Kennedy Norte",
-  mapsLink: "https://www.google.com/maps?q=-2.156528,-79.902222",
+  location: SECRET SPOT,
   amenities: ["DJ en vivo", "Piscina", "Cóctel de bienvenida", "Seguridad privada", "Hamburguesas, hot dogs y cervezas a la venta", "Sorpresa especial durante la noche"],
   tickets: [
     { id: "dopamina", name: "Dopamina Pass", price: 10, desc: "1 cóctel de cortesía" },
@@ -221,10 +220,12 @@ export default function App() {
           {EVENT.name}
         </h1>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 22px", fontSize: 14, fontWeight: 500 }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 6 }}><Calendar size={16} /> {EVENT.date}</span>
-          <span style={{ display: "flex", alignItems: "center", gap: 6 }}><Clock size={16} /> {EVENT.time}</span>
-          <a href={EVENT.mapsLink} target="_blank" rel="noreferrer" style={{ color: C.cream, display: "flex", alignItems: "center", gap: 6, textDecoration: "underline" }}>
-            <MapPin size={16} /> {EVENT.location}
+  <span style={{ display: "flex", alignItems: "center", gap: 6 }}><Calendar size={16} /> {EVENT.date}</span>
+  <span style={{ display: "flex", alignItems: "center", gap: 6 }}><Clock size={16} /> {EVENT.time}</span>
+</div>
+<p style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, marginTop: 16, opacity: 0.95, maxWidth: 480, lineHeight: 1.5 }}>
+  <MapPin size={16} style={{ flexShrink: 0 }} /> <strong>SECRET SPOT</strong> (Al enviar tu comprobante estarás en lista y se te enviará la ubicación).
+</p>
           </a>
         </div>
         {/* palm silhouette divider */}
@@ -449,7 +450,7 @@ function BoardingPass({ entry, event, onReset }) {
         <span className="mono" style={{ fontSize: 12, letterSpacing: 2, color: C.papaya }}>RESERVA GUARDADA</span>
       </div>
       <h3 className="display" style={{ fontSize: 26, margin: "0 0 10px" }}>{event.name}</h3>
-      <p style={{ margin: "0 0 14px", fontSize: 13, opacity: 0.8 }}>{event.date} · {event.location}</p>
+      <p style={{ margin: "0 0 14px", fontSize: 13, opacity: 0.8 }}><p style={{ margin: "0 0 14px", fontSize: 13, opacity: 0.8 }}>{event.date} · <strong>Secret Spot</strong></p></p>
       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 14 }}>
         <div>
           <p style={{ opacity: 0.6, margin: 0 }}>PASAJERO</p>
